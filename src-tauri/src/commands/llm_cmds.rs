@@ -3,6 +3,7 @@ use crate::llm::{
     card_generation_messages, extract_json, ChatRequest, ClaudeProvider, LlmState,
     OpenAiCompatProvider,
 };
+use crate::rule_gen;
 
 #[tauri::command]
 pub async fn generate_cards(
@@ -116,4 +117,13 @@ pub async fn detect_ollama() -> Result<bool, String> {
         Ok(resp) => Ok(resp.status().is_success()),
         Err(_) => Ok(false),
     }
+}
+
+#[tauri::command]
+pub fn generate_cards_rules(content: String) -> Result<Vec<GeneratedCard>, String> {
+    let cards = rule_gen::generate_from_markdown(&content);
+    if cards.is_empty() {
+        return Err("No cards could be extracted from this document".into());
+    }
+    Ok(cards)
 }

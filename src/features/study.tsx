@@ -27,6 +27,8 @@ export function Study() {
   const [flipped, setFlipped] = useState(false);
   const [sessionDone, setSessionDone] = useState(false);
   const [reviewed, setReviewed] = useState(0);
+  const [ratingCounts, setRatingCounts] = useState([0, 0, 0, 0]);
+  const [startTime] = useState(() => Date.now());
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -59,6 +61,11 @@ export function Study() {
     });
 
     setReviewed((r) => r + 1);
+    setRatingCounts((prev) => {
+      const next = [...prev];
+      next[rating - 1]++;
+      return next;
+    });
     setFlipped(false);
 
     if (currentIdx + 1 < cards.length) {
@@ -83,14 +90,51 @@ export function Study() {
   };
 
   if (sessionDone) {
+    const elapsed = Math.round((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+    const correct = ratingCounts[2] + ratingCounts[3]; // Good + Easy
+    const accuracy = reviewed > 0 ? Math.round((correct / reviewed) * 100) : 0;
+
     return (
-      <div className="flex flex-col items-center justify-center h-full space-y-6">
+      <div className="flex flex-col items-center justify-center h-full space-y-8">
         <div className="text-center">
           <h2 className="text-xl font-semibold">Done</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            {reviewed} card{reviewed !== 1 ? "s" : ""} reviewed
+            {reviewed} card{reviewed !== 1 ? "s" : ""} in {timeStr}
           </p>
         </div>
+
+        {reviewed > 0 && (
+          <div className="flex items-center gap-8 text-sm">
+            <div className="text-center">
+              <div className="text-2xl font-semibold tabular-nums">
+                {accuracy}%
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Accuracy</div>
+            </div>
+            <div className="flex gap-3 text-xs text-muted-foreground">
+              {[
+                { label: "Again", count: ratingCounts[0] },
+                { label: "Hard", count: ratingCounts[1] },
+                { label: "Good", count: ratingCounts[2] },
+                { label: "Easy", count: ratingCounts[3] },
+              ].map(
+                (r) =>
+                  r.count > 0 && (
+                    <div key={r.label} className="text-center">
+                      <div className="text-foreground font-medium tabular-nums">
+                        {r.count}
+                      </div>
+                      <div>{r.label}</div>
+                    </div>
+                  ),
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-3">
           <button
             onClick={() => navigate("/")}

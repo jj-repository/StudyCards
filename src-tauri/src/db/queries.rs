@@ -3,6 +3,19 @@ use rusqlite::{params, Connection};
 
 // --- Sources ---
 
+pub fn get_source_paths(conn: &Connection) -> Vec<std::path::PathBuf> {
+    let mut stmt = conn
+        .prepare("SELECT path FROM sources")
+        .unwrap_or_else(|_| panic!("failed to prepare source paths query"));
+    stmt.query_map([], |row| {
+        let p: String = row.get(0)?;
+        Ok(std::path::PathBuf::from(p))
+    })
+    .unwrap_or_else(|_| panic!("failed to query source paths"))
+    .filter_map(|r| r.ok())
+    .collect()
+}
+
 pub fn insert_source(
     conn: &Connection,
     path: &str,
@@ -292,6 +305,52 @@ pub fn set_setting(conn: &Connection, key: &str, value: &str) -> Result<(), rusq
         params![key, value],
     )?;
     Ok(())
+}
+
+// --- Stats ---
+
+pub fn get_daily_reviews(
+    conn: &Connection,
+    days: i64,
+) -> Result<Vec<super::DayReviewStat>, rusqlite::Error> {
+    let mut stmt = conn.prepare(
+        "SELECT date(reviewed_at) as d,
+                COUNT(*) as cnt,
+                SUM(CASE WHEN rating >= 3 THEN 1 ELSE 0 END) as correct
+         FROM reviews
+         WHERE reviewed_at >= datetime('now', ?1)
+         GROUP BY d
+         ORDER BY d ASC",
+    )?;
+    let offset = format!("-{days} days");
+    let rows = stmt.query_map([&offset], |row| {
+        Ok(super::DayReviewStat {
+            date: row.get(0)?,
+            count: row.get(1)?,
+            correct: row.get(2)?,
+        })
+    })?;
+    rows.collect()
+}
+
+pub fn get_cards_per_source(
+    conn: &Connection,
+) -> Result<Vec<super::SourceCardCount>, rusqlite::Error> {
+    let mut stmt = conn.prepare(
+        "SELECT COALESCE(s.name, 'Manual') as name, COUNT(*) as cnt
+         FROM cards c
+         LEFT JOIN sources s ON s.id = c.source_id
+         GROUP BY COALESCE(s.name, 'Manual')
+         ORDER BY cnt DESC
+         LIMIT 20",
+    )?;
+    let rows = stmt.query_map([], |row| {
+        Ok(super::SourceCardCount {
+            name: row.get(0)?,
+            count: row.get(1)?,
+        })
+    })?;
+    rows.collect()
 }
 
 pub fn compute_meaning_hash(front: &str, back: &str) -> String {

@@ -2,6 +2,8 @@ mod commands;
 mod db;
 mod fsrs_engine;
 mod llm;
+mod rule_gen;
+mod watcher;
 
 use db::DbState;
 use llm::LlmState;
@@ -24,6 +26,13 @@ pub fn run() {
             let db_path = app_dir.join("studycards.db");
 
             let conn = db::init_db(&db_path)?;
+
+            // Start file watcher for tracked source folders
+            let watch_paths = db::get_source_paths(&conn);
+            if !watch_paths.is_empty() {
+                watcher::start_watcher(app.handle().clone(), watch_paths);
+            }
+
             app.manage(DbState(Mutex::new(conn)));
             app.manage(LlmState(tokio::sync::Mutex::new(llm::LlmRegistry::new())));
 
@@ -47,6 +56,8 @@ pub fn run() {
             commands::study::get_study_stats,
             commands::study::get_study_config,
             commands::study::save_study_config,
+            commands::study::get_daily_reviews,
+            commands::study::get_cards_per_source,
             // LLM
             commands::llm_cmds::generate_cards,
             commands::llm_cmds::save_generated_cards,
@@ -54,6 +65,7 @@ pub fn run() {
             commands::llm_cmds::test_connection,
             commands::llm_cmds::list_models,
             commands::llm_cmds::detect_ollama,
+            commands::llm_cmds::generate_cards_rules,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

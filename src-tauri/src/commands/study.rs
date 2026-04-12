@@ -1,4 +1,6 @@
-use crate::db::{self, DbState, StudyCard, StudyConfig, StudyStats};
+use crate::db::{
+    self, DayReviewStat, DbState, SourceCardCount, StudyCard, StudyConfig, StudyStats,
+};
 use crate::fsrs_engine::Scheduler;
 
 #[tauri::command]
@@ -137,4 +139,19 @@ pub fn save_study_config(db: tauri::State<'_, DbState>, config: StudyConfig) -> 
     )
     .map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[tauri::command]
+pub fn get_daily_reviews(
+    db: tauri::State<'_, DbState>,
+    days: Option<i64>,
+) -> Result<Vec<DayReviewStat>, String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    db::get_daily_reviews(&conn, days.unwrap_or(30)).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn get_cards_per_source(db: tauri::State<'_, DbState>) -> Result<Vec<SourceCardCount>, String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    db::get_cards_per_source(&conn).map_err(|e| e.to_string())
 }

@@ -67,6 +67,21 @@ pub struct StudyConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct DayReviewStat {
+    pub date: String,
+    pub count: i64,
+    pub correct: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SourceCardCount {
+    pub name: String,
+    pub count: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GeneratedCard {
     #[serde(rename = "type")]
     pub card_type: String,

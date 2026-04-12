@@ -37,21 +37,21 @@ Desktop app that combines LLM-powered flashcard generation from Markdown files w
 - [x] Study session: flip card → rate (Again/Hard/Good/Easy) → FSRS schedules next
 - [x] Dashboard: cards due today, overdue count, total cards, current streak
 - [x] Settings tab: LLM provider config, API keys, model selector, test connection
-- [ ] Settings tab: study config (daily limit, retention target, new cards per session)
-- [x] Settings tab: appearance (dark/light/system theme)
+- [x] Settings tab: study config (daily limit, retention target, new cards per session)
+- [x] Settings tab: appearance (dark-only, polished)
 - [x] Help tab: basic usage guide, keyboard shortcuts reference
 - [x] Nav: Dashboard | Library | Generate | Study | Settings | Help
 
 ### Phase 2 — Polish
 
-- [ ] Rule-based card generator (fallback, no LLM): headers→topics, bold→cloze, lists→enumeration
-- [ ] File watcher: detect MD changes in tracked folders, prompt re-scan
-- [ ] Model recommender panel: Ollama models with VRAM estimates and install commands
-- [ ] Stats/graphs: retention over time, cards per source, review heatmap
-- [ ] Card meaning-hash (Blake3): edit source text without resetting FSRS progress
-- [ ] `/frontend-design` pass on study session + dashboard views
-- [ ] Keyboard shortcuts: 1-4 for ratings, Space to flip, arrow keys to navigate
-- [ ] Session summary: cards reviewed, accuracy %, time spent
+- [x] Rule-based card generator (fallback, no LLM): headers→topics, bold→cloze, lists→enumeration
+- [x] File watcher: detect MD changes in tracked folders, prompt re-scan
+- [x] Model recommender panel: Ollama models with VRAM estimates and install commands
+- [x] Stats/graphs: daily review chart, accuracy %, cards per source
+- [x] Card meaning-hash (Blake3): edit source text without resetting FSRS progress
+- [x] `/impeccable` polish pass on all views
+- [x] Keyboard shortcuts: 1-4 for ratings, Space to flip, arrow keys to navigate
+- [x] Session summary: cards reviewed, accuracy %, time spent, rating breakdown
 
 ### Phase 3 — Extras
 

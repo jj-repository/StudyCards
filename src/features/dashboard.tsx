@@ -13,15 +13,45 @@ interface StudyStats {
   streakDays: number;
 }
 
+interface DayReviewStat {
+  date: string;
+  count: number;
+  correct: number;
+}
+
+interface SourceCardCount {
+  name: string;
+  count: number;
+}
+
 export function Dashboard() {
   const [stats, setStats] = useState<StudyStats | null>(null);
+  const [dailyReviews, setDailyReviews] = useState<DayReviewStat[]>([]);
+  const [sources, setSources] = useState<SourceCardCount[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     invoke<StudyStats>("get_study_stats").then(setStats).catch(console.error);
+    invoke<DayReviewStat[]>("get_daily_reviews", { days: 30 })
+      .then(setDailyReviews)
+      .catch(console.error);
+    invoke<SourceCardCount[]>("get_cards_per_source")
+      .then(setSources)
+      .catch(console.error);
   }, []);
 
   if (!stats) return null;
+
+  const maxReviews = Math.max(...dailyReviews.map((d) => d.count), 1);
+  const avgAccuracy =
+    dailyReviews.length > 0
+      ? Math.round(
+          (dailyReviews.reduce((sum, d) => sum + d.correct, 0) /
+            dailyReviews.reduce((sum, d) => sum + d.count, 0)) *
+            100,
+        ) || 0
+      : 0;
+  const maxSourceCount = Math.max(...sources.map((s) => s.count), 1);
 
   return (
     <div className="space-y-8">
@@ -76,6 +106,65 @@ export function Dashboard() {
         >
           Study now — {stats.dueToday} due
         </button>
+      )}
+
+      {/* Review activity — last 30 days */}
+      {dailyReviews.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Last 30 days
+            </h2>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {avgAccuracy}% accuracy
+            </span>
+          </div>
+          <div className="flex items-end gap-px h-20">
+            {dailyReviews.map((d) => {
+              const height = Math.max((d.count / maxReviews) * 100, 4);
+              const accuracy = d.count > 0 ? d.correct / d.count : 0;
+              const opacity = 0.3 + accuracy * 0.7;
+              return (
+                <div
+                  key={d.date}
+                  className="flex-1 rounded-sm bg-primary transition-colors"
+                  style={{
+                    height: `${height}%`,
+                    opacity,
+                  }}
+                  title={`${d.date}: ${d.count} reviews, ${Math.round(accuracy * 100)}% correct`}
+                />
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Cards per source */}
+      {sources.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Cards by source
+          </h2>
+          <div className="space-y-2">
+            {sources.map((s) => (
+              <div key={s.name} className="flex items-center gap-3">
+                <span className="text-sm truncate w-36">{s.name}</span>
+                <div className="flex-1 h-1.5 rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full bg-primary/60"
+                    style={{
+                      width: `${(s.count / maxSourceCount) * 100}%`,
+                    }}
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground tabular-nums w-8 text-right">
+                  {s.count}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Empty state */}

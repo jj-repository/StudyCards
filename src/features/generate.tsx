@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import {
-  FolderOpen,
-  Sparkles,
-  Check,
-  X,
-  Loader2,
-  FileText,
-} from "lucide-react";
+import { FolderOpen, Sparkles, Check, X, Loader2 } from "lucide-react";
 
 interface GeneratedCard {
   cardType: string;
@@ -96,42 +89,38 @@ export function Generate() {
   };
 
   const acceptedCount = pending.filter((c) => c.accepted).length;
+  const fileName = filePath
+    ? filePath.split("/").pop() || filePath.split("\\").pop()
+    : null;
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Generate Cards</h1>
-        <p className="text-sm text-muted-foreground">
-          Create flashcards from your Markdown files using AI
-        </p>
-      </div>
+    <div className="space-y-5">
+      <h1 className="text-2xl font-semibold tracking-tight">Generate</h1>
 
-      {/* File picker + model */}
-      <div className="flex gap-3">
+      {/* Controls */}
+      <div className="flex items-center gap-3">
         <button
           onClick={pickFile}
-          className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:bg-accent transition-colors"
+          className="flex items-center gap-2 rounded-md bg-card px-3 py-2 text-sm hover:bg-accent transition-colors"
         >
-          <FolderOpen className="h-4 w-4" />
-          {filePath
-            ? filePath.split("/").pop() || filePath.split("\\").pop()
-            : "Open Markdown File"}
+          <FolderOpen className="h-4 w-4 text-muted-foreground" />
+          {fileName || "Open file..."}
         </button>
         <input
           value={model}
           onChange={(e) => setModel(e.target.value)}
-          placeholder="Model name"
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm w-48"
+          placeholder="Model"
+          className="rounded-md bg-input px-3 py-2 text-sm w-44 placeholder:text-muted-foreground/50"
         />
         <button
           onClick={generate}
           disabled={loading || !content.trim()}
-          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/85 disabled:opacity-40 transition-colors"
         >
           {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
-            <Sparkles className="h-4 w-4" />
+            <Sparkles className="h-3.5 w-3.5" />
           )}
           Generate
         </button>
@@ -139,24 +128,33 @@ export function Generate() {
 
       {/* Content preview */}
       {content && !pending.length && !loading && (
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg bg-card p-4">
           <div className="flex items-center gap-2 mb-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Preview</span>
             <span className="text-xs text-muted-foreground">
-              {content.length} chars
+              {content.length} characters
             </span>
           </div>
-          <pre className="max-h-48 overflow-auto text-xs text-muted-foreground whitespace-pre-wrap">
+          <pre className="max-h-48 overflow-auto text-xs text-muted-foreground/70 whitespace-pre-wrap leading-relaxed">
             {content.slice(0, 2000)}
             {content.length > 2000 && "..."}
           </pre>
         </div>
       )}
 
+      {/* Error */}
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+        <div className="rounded-md bg-[oklch(0.20_0.02_25)] px-4 py-3 text-sm text-destructive-foreground">
           {error}
+        </div>
+      )}
+
+      {/* Loading */}
+      {loading && (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          <span className="ml-3 text-sm text-muted-foreground">
+            Generating...
+          </span>
         </div>
       )}
 
@@ -164,39 +162,37 @@ export function Generate() {
       {pending.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
-              Generated {pending.length} cards — {acceptedCount} accepted
+            <span className="text-sm text-muted-foreground">
+              {pending.length} generated, {acceptedCount} accepted
             </span>
             {!saved ? (
               <button
                 onClick={saveCards}
                 disabled={acceptedCount === 0}
-                className="rounded-md bg-green-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/85 disabled:opacity-40 transition-colors"
               >
-                Save {acceptedCount} Cards
+                Save {acceptedCount}
               </button>
             ) : (
-              <span className="flex items-center gap-1 text-sm text-green-400">
-                <Check className="h-4 w-4" /> Saved!
+              <span className="flex items-center gap-1.5 text-sm text-[oklch(0.72_0.10_155)]">
+                <Check className="h-3.5 w-3.5" /> Saved
               </span>
             )}
           </div>
 
-          {pending.map((card, idx) => (
-            <div
-              key={idx}
-              className={`rounded-lg border p-3 transition-colors ${
-                card.accepted
-                  ? "border-border bg-card"
-                  : "border-border/50 bg-card/50 opacity-50"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
+          <div className="space-y-1">
+            {pending.map((card, idx) => (
+              <div
+                key={idx}
+                className={`group flex items-start justify-between gap-3 rounded-md px-3 py-2.5 transition-colors ${
+                  card.accepted ? "bg-card" : "bg-card/30 opacity-40"
+                }`}
+              >
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] uppercase text-muted-foreground">
+                  <span className="text-[10px] uppercase tracking-wide text-muted-foreground/60">
                     {card.cardType}
                   </span>
-                  <p className="text-sm font-medium mt-0.5">
+                  <p className="text-sm mt-0.5">
                     {card.cardType === "qa" ? card.question : card.text}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -205,11 +201,7 @@ export function Generate() {
                 </div>
                 <button
                   onClick={() => toggleCard(idx)}
-                  className={`rounded p-1.5 transition-colors ${
-                    card.accepted
-                      ? "text-green-400 hover:bg-red-500/20 hover:text-red-400"
-                      : "text-muted-foreground hover:bg-green-500/20 hover:text-green-400"
-                  }`}
+                  className="rounded p-1.5 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {card.accepted ? (
                     <Check className="h-4 w-4" />
@@ -218,17 +210,8 @@ export function Generate() {
                   )}
                 </button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <span className="ml-3 text-sm text-muted-foreground">
-            Generating cards...
-          </span>
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -21,8 +21,9 @@ pub fn init_db(path: &Path) -> Result<Connection, Box<dyn std::error::Error>> {
          PRAGMA busy_timeout=5000;",
     )?;
 
-    let migrations = Migrations::new(vec![M::up(
-        "CREATE TABLE sources (
+    let migrations = Migrations::new(vec![
+        M::up(
+            "CREATE TABLE sources (
             id          INTEGER PRIMARY KEY,
             path        TEXT NOT NULL UNIQUE,
             name        TEXT NOT NULL,
@@ -66,7 +67,18 @@ pub fn init_db(path: &Path) -> Result<Connection, Box<dyn std::error::Error>> {
         CREATE INDEX idx_cards_source ON cards(source_id);
         CREATE INDEX idx_card_states_due ON card_states(due_date);
         CREATE INDEX idx_reviews_card ON reviews(card_id);",
-    )]);
+        ),
+        M::up(
+            "CREATE TABLE settings (
+            key   TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        );
+
+        INSERT INTO settings (key, value) VALUES ('daily_review_limit', '0');
+        INSERT INTO settings (key, value) VALUES ('new_cards_per_session', '20');
+        INSERT INTO settings (key, value) VALUES ('target_retention', '0.9');",
+        ),
+    ]);
 
     migrations.to_latest(&mut conn)?;
 

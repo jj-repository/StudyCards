@@ -9,7 +9,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/components/theme-provider";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -21,18 +20,16 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const { theme, setTheme } = useTheme();
-
   return (
-    <aside className="flex h-full w-56 flex-col border-r border-border bg-sidebar">
-      <div className="flex items-center gap-2 px-4 py-5">
-        <BookOpen className="h-6 w-6 text-sidebar-primary" />
-        <span className="text-lg font-semibold text-sidebar-foreground">
+    <aside className="flex h-full w-52 flex-col border-r border-sidebar-border bg-sidebar">
+      <div className="flex items-center gap-2.5 px-4 py-5">
+        <BookOpen className="h-5 w-5 text-primary" />
+        <span className="text-base font-semibold tracking-tight text-sidebar-foreground">
           StudyCards
         </span>
       </div>
 
-      <nav className="flex-1 space-y-1 px-2">
+      <nav className="flex-1 space-y-0.5 px-2">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -40,10 +37,10 @@ export function Sidebar() {
             end={item.to === "/"}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
               )
             }
           >
@@ -53,25 +50,8 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-border p-3">
-        <button
-          onClick={() =>
-            setTheme(
-              theme === "dark"
-                ? "light"
-                : theme === "light"
-                  ? "system"
-                  : "dark",
-            )
-          }
-          className="w-full rounded-md px-3 py-1.5 text-xs text-muted-foreground hover:bg-sidebar-accent/50 transition-colors"
-        >
-          Theme:{" "}
-          {theme === "system" ? "System" : theme === "dark" ? "Dark" : "Light"}
-        </button>
-        <div className="mt-1 text-center text-xs text-muted-foreground/50">
-          v0.01
-        </div>
+      <div className="border-t border-sidebar-border px-4 py-3">
+        <span className="text-[11px] text-muted-foreground/40">v0.01</span>
       </div>
     </aside>
   );

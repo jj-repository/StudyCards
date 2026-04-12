@@ -45,6 +45,8 @@ pub fn run() {
             commands::study::get_due_cards,
             commands::study::submit_review,
             commands::study::get_study_stats,
+            commands::study::get_study_config,
+            commands::study::save_study_config,
             // LLM
             commands::llm_cmds::generate_cards,
             commands::llm_cmds::save_generated_cards,

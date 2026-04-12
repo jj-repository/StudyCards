@@ -9,16 +9,16 @@ Read `docs/REFERENCE.md` for tech reference (APIs, patterns, gotchas).
 
 ## Stack
 
-| Layer | Tech |
-|---|---|
-| Shell | Tauri 2 |
-| Frontend | React 19 + TypeScript + Vite 8 |
-| UI | Tailwind v4 (CSS-first, no config file) + Lucide icons |
-| Backend | Rust (Tauri commands) |
-| Database | rusqlite 0.39 (bundled) + rusqlite_migration 2.5 |
-| Spaced Rep | fsrs-rs 5.2.0 (pulls burn ML framework — slow first compile) |
-| LLM | reqwest → Ollama/OpenAI/Gemini (OpenAI-compat) + Claude (custom adapter) |
-| Package mgr | bun (never npm) |
+| Layer       | Tech                                                                     |
+| ----------- | ------------------------------------------------------------------------ |
+| Shell       | Tauri 2                                                                  |
+| Frontend    | React 19 + TypeScript + Vite 8                                           |
+| UI          | Tailwind v4 (CSS-first, no config file) + Lucide icons                   |
+| Backend     | Rust (Tauri commands)                                                    |
+| Database    | rusqlite 0.39 (bundled) + rusqlite_migration 2.5                         |
+| Spaced Rep  | fsrs-rs 5.2.0 (pulls burn ML framework — slow first compile)             |
+| LLM         | reqwest → Ollama/OpenAI/Gemini (OpenAI-compat) + Claude (custom adapter) |
+| Package mgr | bun (never npm)                                                          |
 
 ## Project Structure
 

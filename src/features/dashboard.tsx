@@ -21,111 +21,84 @@ export function Dashboard() {
     invoke<StudyStats>("get_study_stats").then(setStats).catch(console.error);
   }, []);
 
-  const statCards = stats
-    ? [
-        {
-          label: "Due Today",
-          value: stats.dueToday,
-          icon: Clock,
-          accent: "text-orange-500",
-        },
-        {
-          label: "Total Cards",
-          value: stats.totalCards,
-          icon: BookOpen,
-          accent: "text-blue-500",
-        },
-        {
-          label: "Reviews Today",
-          value: stats.reviewsToday,
-          icon: Star,
-          accent: "text-green-500",
-        },
-        {
-          label: "Streak",
-          value: `${stats.streakDays}d`,
-          icon: Flame,
-          accent: "text-red-500",
-        },
-      ]
-    : [];
+  if (!stats) return null;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Your study overview at a glance
-        </p>
-      </div>
+    <div className="space-y-8">
+      <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {statCards.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-lg border border-border bg-card p-4"
-          >
+      {/* Primary stats */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { label: "Due today", value: stats.dueToday, icon: Clock },
+          { label: "Total cards", value: stats.totalCards, icon: BookOpen },
+          { label: "Reviewed today", value: stats.reviewsToday, icon: Star },
+          { label: "Streak", value: `${stats.streakDays}d`, icon: Flame },
+        ].map((s) => (
+          <div key={s.label} className="rounded-lg bg-card px-4 py-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{s.label}</span>
-              <s.icon className={`h-4 w-4 ${s.accent}`} />
+              <span className="text-xs text-muted-foreground">{s.label}</span>
+              <s.icon className="h-3.5 w-3.5 text-muted-foreground/50" />
             </div>
-            <div className="mt-2 text-2xl font-bold">{s.value}</div>
+            <div className="mt-1.5 text-xl font-semibold tabular-nums">
+              {s.value}
+            </div>
           </div>
         ))}
       </div>
 
-      {stats && stats.dueToday > 0 && (
+      {/* Card status breakdown */}
+      <div className="flex items-center gap-6 text-sm">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[oklch(0.65_0.10_240)]" />
+          <span className="text-muted-foreground">New</span>
+          <span className="font-medium tabular-nums">{stats.newCards}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[oklch(0.68_0.12_65)]" />
+          <span className="text-muted-foreground">Learning</span>
+          <span className="font-medium tabular-nums">
+            {stats.learningCards}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[oklch(0.65_0.10_155)]" />
+          <span className="text-muted-foreground">Review</span>
+          <span className="font-medium tabular-nums">{stats.reviewCards}</span>
+        </div>
+      </div>
+
+      {/* CTA */}
+      {stats.dueToday > 0 && (
         <button
           onClick={() => navigate("/study")}
-          className="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85"
         >
-          Start Studying ({stats.dueToday} cards due)
+          Study now — {stats.dueToday} due
         </button>
       )}
 
-      {stats && stats.totalCards === 0 && (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
-          <BookOpen className="mx-auto h-10 w-10 text-muted-foreground/50" />
-          <p className="mt-3 text-sm text-muted-foreground">
-            No cards yet. Go to{" "}
+      {/* Empty state */}
+      {stats.totalCards === 0 && (
+        <div className="rounded-lg bg-card px-6 py-10 text-center">
+          <BookOpen className="mx-auto h-8 w-8 text-muted-foreground/40" />
+          <p className="mt-4 text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+            No cards yet.{" "}
             <button
               onClick={() => navigate("/generate")}
-              className="text-primary underline"
+              className="text-primary hover:underline"
             >
-              Generate
+              Generate from Markdown
             </button>{" "}
-            to create cards from your Markdown files, or{" "}
+            or{" "}
             <button
               onClick={() => navigate("/library")}
-              className="text-primary underline"
+              className="text-primary hover:underline"
             >
-              Library
-            </button>{" "}
-            to add cards manually.
+              create manually
+            </button>
+            .
           </p>
-        </div>
-      )}
-
-      {stats && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="rounded-lg border border-border p-4">
-            <span className="text-xs text-muted-foreground">New</span>
-            <div className="mt-1 text-lg font-semibold text-blue-500">
-              {stats.newCards}
-            </div>
-          </div>
-          <div className="rounded-lg border border-border p-4">
-            <span className="text-xs text-muted-foreground">Learning</span>
-            <div className="mt-1 text-lg font-semibold text-orange-500">
-              {stats.learningCards}
-            </div>
-          </div>
-          <div className="rounded-lg border border-border p-4">
-            <span className="text-xs text-muted-foreground">Review</span>
-            <div className="mt-1 text-lg font-semibold text-green-500">
-              {stats.reviewCards}
-            </div>
-          </div>
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-use fsrs::{MemoryState, FSRS};
+use fsrs::{MemoryState, DEFAULT_PARAMETERS, FSRS};
 
 pub struct Scheduler {
     fsrs: FSRS,
@@ -8,7 +8,7 @@ pub struct Scheduler {
 impl Scheduler {
     pub fn new(desired_retention: f32) -> Self {
         Self {
-            fsrs: FSRS::new(None).expect("Failed to initialize FSRS"),
+            fsrs: FSRS::new(Some(&DEFAULT_PARAMETERS)).expect("Failed to initialize FSRS"),
             desired_retention,
         }
     }

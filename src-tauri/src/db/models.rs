@@ -59,6 +59,14 @@ pub struct StudyStats {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct StudyConfig {
+    pub daily_review_limit: i64,
+    pub new_cards_per_session: i64,
+    pub target_retention: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GeneratedCard {
     #[serde(rename = "type")]
     pub card_type: String,

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { RotateCcw, ChevronRight } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface StudyCard {
@@ -15,10 +15,10 @@ interface StudyCard {
 }
 
 const RATINGS = [
-  { value: 1, label: "Again", color: "bg-red-600 hover:bg-red-700" },
-  { value: 2, label: "Hard", color: "bg-orange-600 hover:bg-orange-700" },
-  { value: 3, label: "Good", color: "bg-blue-600 hover:bg-blue-700" },
-  { value: 4, label: "Easy", color: "bg-green-600 hover:bg-green-700" },
+  { value: 1, label: "Again", key: "1" },
+  { value: 2, label: "Hard", key: "2" },
+  { value: 3, label: "Good", key: "3" },
+  { value: 4, label: "Easy", key: "4" },
 ];
 
 export function Study() {
@@ -28,6 +28,7 @@ export function Study() {
   const [sessionDone, setSessionDone] = useState(false);
   const [reviewed, setReviewed] = useState(0);
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     invoke<StudyCard[]>("get_due_cards", { limit: 50 })
@@ -38,14 +39,14 @@ export function Study() {
       .catch(console.error);
   }, []);
 
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, [currentIdx, flipped]);
+
   const card = cards[currentIdx];
 
   const submitRating = async (rating: number) => {
     if (!card) return;
-
-    const lastReview = new Date().toISOString();
-    // For now, approximate elapsed days as 0 for simplicity
-    // In production, calculate from card's due_date
     const daysElapsed = card.reviewCount === 0 ? 0 : 1;
 
     await invoke("submit_review", {
@@ -83,24 +84,25 @@ export function Study() {
 
   if (sessionDone) {
     return (
-      <div className="flex flex-col items-center justify-center h-full space-y-4">
-        <div className="text-4xl">🎉</div>
-        <h2 className="text-xl font-bold">Session Complete!</h2>
-        <p className="text-sm text-muted-foreground">
-          You reviewed {reviewed} card{reviewed !== 1 ? "s" : ""}
-        </p>
+      <div className="flex flex-col items-center justify-center h-full space-y-6">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold">Done</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {reviewed} card{reviewed !== 1 ? "s" : ""} reviewed
+          </p>
+        </div>
         <div className="flex gap-3">
           <button
             onClick={() => navigate("/")}
-            className="rounded-md border border-border px-4 py-2 text-sm hover:bg-accent"
+            className="rounded-md border border-border px-4 py-2 text-sm hover:bg-accent transition-colors"
           >
             Dashboard
           </button>
           <button
             onClick={() => window.location.reload()}
-            className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+            className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/85 transition-colors"
           >
-            <RotateCcw className="h-4 w-4" /> Study Again
+            <RotateCcw className="h-3.5 w-3.5" /> Study again
           </button>
         </div>
       </div>
@@ -109,7 +111,7 @@ export function Study() {
 
   if (!card) {
     return (
-      <div className="flex items-center justify-center h-full text-muted-foreground">
+      <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
         Loading...
       </div>
     );
@@ -117,19 +119,20 @@ export function Study() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center h-full space-y-6 outline-none"
+      ref={containerRef}
+      className="flex flex-col items-center justify-center h-full outline-none"
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
       {/* Progress */}
-      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-        <span>
-          {currentIdx + 1} / {cards.length}
+      <div className="mb-8 flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="tabular-nums">
+          {currentIdx + 1}/{cards.length}
         </span>
         {card.sourceName && (
           <>
             <span className="text-border">|</span>
-            <span>{card.sourceName}</span>
+            <span className="truncate max-w-48">{card.sourceName}</span>
           </>
         )}
       </div>
@@ -137,42 +140,44 @@ export function Study() {
       {/* Card */}
       <div
         onClick={() => !flipped && setFlipped(true)}
-        className="w-full max-w-lg cursor-pointer rounded-xl border border-border bg-card p-8 shadow-lg min-h-[200px] flex flex-col items-center justify-center text-center transition-all hover:shadow-xl"
+        className="w-full max-w-md cursor-pointer rounded-lg bg-card px-8 py-10 min-h-[220px] flex flex-col items-center justify-center text-center"
       >
-        <span className="text-[10px] uppercase text-muted-foreground mb-3">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 mb-4">
           {card.cardType === "cloze" ? "Fill in the blank" : "Question"}
         </span>
-        <p className="text-lg font-medium leading-relaxed">{card.front}</p>
+        <p className="text-lg leading-relaxed">{card.front}</p>
 
         {flipped && (
-          <div className="mt-6 w-full border-t border-border pt-4">
-            <span className="text-[10px] uppercase text-muted-foreground">
+          <div className="mt-8 w-full border-t border-border pt-5">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60">
               Answer
             </span>
-            <p className="mt-1 text-lg text-green-400 font-medium">
+            <p className="mt-2 text-lg text-primary leading-relaxed">
               {card.back}
             </p>
           </div>
         )}
 
         {!flipped && (
-          <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground/50">
-            <ChevronRight className="h-3 w-3" /> Click or press Space to reveal
-          </div>
+          <p className="mt-6 text-xs text-muted-foreground/40">
+            Space to reveal
+          </p>
         )}
       </div>
 
       {/* Rating buttons */}
       {flipped && (
-        <div className="flex gap-3">
+        <div className="mt-8 flex gap-2">
           {RATINGS.map((r) => (
             <button
               key={r.value}
               onClick={() => submitRating(r.value)}
-              className={`rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors ${r.color}`}
+              className="rounded-md bg-secondary px-5 py-2.5 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent"
             >
               {r.label}
-              <span className="ml-1 text-xs opacity-70">({r.value})</span>
+              <kbd className="ml-1.5 text-[10px] text-muted-foreground">
+                {r.key}
+              </kbd>
             </button>
           ))}
         </div>

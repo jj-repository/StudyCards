@@ -233,12 +233,12 @@ Appearance
 
 ## Errors
 
-| Error | Attempt | Resolution |
-| ----- | ------- | ---------- |
+| Error                                       | Attempt                                     | Resolution                                               |
+| ------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- |
 | `http:default` not a valid Tauri permission | Capabilities referenced non-existent plugin | Removed — HTTP calls via reqwest from Rust, not frontend |
-| FSRS::default() doesn't exist | Research said it did | Use `FSRS::new(None)` instead |
-| `to_latest(&conn)` needs `&mut` | rusqlite_migration v2.5 API | Changed to `let mut conn` |
-| MutexGuard not Send across await | std::sync::Mutex in async commands | Switched LlmState to `tokio::sync::Mutex` |
-| Icons not RGBA | Generated RGB PNGs | Regenerated with RGBA (color type 6) |
-| TS6 deprecation: baseUrl | TypeScript 6 removed baseUrl | Added `ignoreDeprecations: "6.0"` to tsconfig |
-| CSS import not found by tsc | Strict TS can't find .css modules | Added `src/vite-env.d.ts` with CSS module declaration |
+| FSRS::default() doesn't exist               | Research said it did                        | Use `FSRS::new(None)` instead                            |
+| `to_latest(&conn)` needs `&mut`             | rusqlite_migration v2.5 API                 | Changed to `let mut conn`                                |
+| MutexGuard not Send across await            | std::sync::Mutex in async commands          | Switched LlmState to `tokio::sync::Mutex`                |
+| Icons not RGBA                              | Generated RGB PNGs                          | Regenerated with RGBA (color type 6)                     |
+| TS6 deprecation: baseUrl                    | TypeScript 6 removed baseUrl                | Added `ignoreDeprecations: "6.0"` to tsconfig            |
+| CSS import not found by tsc                 | Strict TS can't find .css modules           | Added `src/vite-env.d.ts` with CSS module declaration    |

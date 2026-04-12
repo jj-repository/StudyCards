@@ -277,6 +277,23 @@ fn compute_streak(conn: &Connection) -> Result<i64, rusqlite::Error> {
     Ok(streak)
 }
 
+// --- Settings ---
+
+pub fn get_setting(conn: &Connection, key: &str) -> Result<String, rusqlite::Error> {
+    conn.query_row("SELECT value FROM settings WHERE key = ?1", [key], |row| {
+        row.get(0)
+    })
+}
+
+pub fn set_setting(conn: &Connection, key: &str, value: &str) -> Result<(), rusqlite::Error> {
+    conn.execute(
+        "INSERT INTO settings (key, value) VALUES (?1, ?2)
+         ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        params![key, value],
+    )?;
+    Ok(())
+}
+
 pub fn compute_meaning_hash(front: &str, back: &str) -> String {
     let normalized = format!(
         "{}|{}",

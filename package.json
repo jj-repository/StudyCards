@@ -19,6 +19,7 @@
     "typescript": "^6.0.2"
   },
   "dependencies": {
+    "@fontsource-variable/figtree": "^5.2.10",
     "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-table": "^8.21.3",

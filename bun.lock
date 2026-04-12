@@ -5,6 +5,7 @@
     "": {
       "name": "studycards",
       "dependencies": {
+        "@fontsource-variable/figtree": "^5.2.10",
         "@hookform/resolvers": "^5.2.2",
         "@tailwindcss/vite": "^4.2.2",
         "@tanstack/react-table": "^8.21.3",
@@ -38,6 +39,8 @@
     "@emnapi/runtime": ["@emnapi/runtime@1.9.2", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-3U4+MIWHImeyu1wnmVygh5WlgfYDtyf0k8AbLhMFxOipihf6nrWC4syIm/SwEeec0mNSafiiNnMJwbza/Is6Lw=="],
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.2.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w=="],
+
+    "@fontsource-variable/figtree": ["@fontsource-variable/figtree@5.2.10", "", {}, "sha512-a5Gumbpy3mdd+Yg31g6Qb7CmjYbrfyutJa3bWfP5q8A4GclIOwX7mI+ZuSHsJnw/mHvW6r9oh1AHJcJTIxK4JA=="],
 
     "@hookform/resolvers": ["@hookform/resolvers@5.2.2", "", { "dependencies": { "@standard-schema/utils": "^0.3.0" }, "peerDependencies": { "react-hook-form": "^7.55.0" } }, "sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA=="],
 

@@ -1,100 +1,92 @@
-import { Keyboard, BookOpen, Sparkles, Settings } from "lucide-react";
-
 const SHORTCUTS = [
-  { key: "Space / Enter", action: "Flip card" },
-  { key: "1", action: "Rate: Again" },
-  { key: "2", action: "Rate: Hard" },
-  { key: "3", action: "Rate: Good" },
-  { key: "4", action: "Rate: Easy" },
+  { key: "Space", action: "Flip card" },
+  { key: "1", action: "Again" },
+  { key: "2", action: "Hard" },
+  { key: "3", action: "Good" },
+  { key: "4", action: "Easy" },
 ];
 
 export function Help() {
   return (
-    <div className="space-y-6 max-w-xl">
-      <div>
-        <h1 className="text-2xl font-bold">Help</h1>
-        <p className="text-sm text-muted-foreground">
-          Getting started with StudyCards
-        </p>
-      </div>
+    <div className="space-y-8 max-w-lg">
+      <h1 className="text-2xl font-semibold tracking-tight">Help</h1>
 
       <section className="space-y-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-muted-foreground">
-          <BookOpen className="h-4 w-4" /> Quick Start
+        <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Quick Start
         </h2>
-        <div className="rounded-lg border border-border bg-card p-4 space-y-2 text-sm">
+        <div className="rounded-lg bg-card p-4 space-y-3 text-sm leading-relaxed">
           <p>
-            <strong>1.</strong> Set up your LLM provider in{" "}
-            <strong>Settings</strong> — Ollama (free, local) or a cloud API.
+            <span className="text-muted-foreground">1.</span> Configure your LLM
+            provider in Settings — Ollama runs free and local.
           </p>
           <p>
-            <strong>2.</strong> Go to <strong>Generate</strong>, open a Markdown
-            file, and click Generate to create flashcards with AI.
+            <span className="text-muted-foreground">2.</span> Open a Markdown
+            file in Generate and let AI create flashcards.
           </p>
           <p>
-            <strong>3.</strong> Review the generated cards — accept or reject
-            each one, then save.
+            <span className="text-muted-foreground">3.</span> Review generated
+            cards, accept or reject, then save.
           </p>
           <p>
-            <strong>4.</strong> Go to <strong>Study</strong> to start your
-            spaced repetition session.
+            <span className="text-muted-foreground">4.</span> Study shows due
+            cards. Rate each to schedule the next review.
           </p>
           <p>
-            <strong>5.</strong> Use <strong>Library</strong> to browse, search,
-            edit, or manually create cards.
+            <span className="text-muted-foreground">5.</span> Library lets you
+            browse, search, edit, or create cards by hand.
           </p>
         </div>
       </section>
 
       <section className="space-y-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-muted-foreground">
-          <Sparkles className="h-4 w-4" /> Spaced Repetition
+        <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Spaced Repetition
         </h2>
-        <div className="rounded-lg border border-border bg-card p-4 text-sm space-y-2">
+        <div className="rounded-lg bg-card p-4 text-sm space-y-3 leading-relaxed">
           <p>
-            StudyCards uses the <strong>FSRS</strong> algorithm (same family as
-            modern Anki) to schedule your reviews optimally.
+            StudyCards uses <strong>FSRS</strong> (same algorithm family as
+            modern Anki) to schedule reviews. Cards you struggle with appear
+            more often. Cards you know well space out to days or weeks.
           </p>
           <p>
-            Cards you struggle with appear more often. Cards you know well space
-            out to days or weeks. The system targets <strong>90% recall</strong>{" "}
-            — you see each card right before you'd forget it.
+            The system targets <strong>90% recall</strong> — each card appears
+            right before you'd forget it.
           </p>
-          <p>Rating guide:</p>
-          <ul className="ml-4 space-y-1">
-            <li>
-              <strong className="text-red-400">Again (1)</strong> — Forgot
+          <div className="space-y-1.5 text-sm">
+            <div>
+              <span className="text-[oklch(0.60_0.14_25)]">Again</span> — Forgot
               completely
-            </li>
-            <li>
-              <strong className="text-orange-400">Hard (2)</strong> — Recalled
-              with difficulty
-            </li>
-            <li>
-              <strong className="text-blue-400">Good (3)</strong> — Recalled
-              correctly
-            </li>
-            <li>
-              <strong className="text-green-400">Easy (4)</strong> — Instant
-              recall
-            </li>
-          </ul>
+            </div>
+            <div>
+              <span className="text-[oklch(0.75_0.10_65)]">Hard</span> —
+              Recalled with difficulty
+            </div>
+            <div>
+              <span className="text-[oklch(0.65_0.10_240)]">Good</span> —
+              Recalled correctly
+            </div>
+            <div>
+              <span className="text-[oklch(0.65_0.10_155)]">Easy</span> —
+              Instant recall
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="space-y-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-muted-foreground">
-          <Keyboard className="h-4 w-4" /> Keyboard Shortcuts
+        <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Keyboard Shortcuts
         </h2>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg bg-card p-4">
           <div className="space-y-1">
             {SHORTCUTS.map((s) => (
               <div
                 key={s.key}
-                className="flex items-center justify-between py-1"
+                className="flex items-center justify-between py-1.5"
               >
                 <span className="text-sm">{s.action}</span>
-                <kbd className="rounded border border-border bg-muted px-2 py-0.5 text-xs font-mono">
+                <kbd className="rounded bg-secondary px-2 py-0.5 text-xs font-mono text-muted-foreground">
                   {s.key}
                 </kbd>
               </div>
@@ -104,28 +96,25 @@ export function Help() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-muted-foreground">
-          <Settings className="h-4 w-4" /> LLM Providers
+        <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          LLM Providers
         </h2>
-        <div className="rounded-lg border border-border bg-card p-4 text-sm space-y-2">
+        <div className="rounded-lg bg-card p-4 text-sm space-y-3 leading-relaxed">
           <p>
-            <strong>Ollama</strong> — Free, runs locally. Install from{" "}
-            ollama.com, then pull a model like{" "}
-            <code className="rounded bg-muted px-1 text-xs">
+            <strong>Ollama</strong> — Free, local. Install from ollama.com, then{" "}
+            <code className="rounded bg-secondary px-1 py-0.5 text-xs">
               ollama pull qwen2.5:7b
             </code>
           </p>
           <p>
-            <strong>Gemini</strong> — Free tier (1500 requests/day). Get an API
-            key from Google AI Studio.
+            <strong>Gemini</strong> — Free tier, 1500 requests/day. API key from
+            Google AI Studio.
           </p>
           <p>
-            <strong>OpenAI</strong> — Paid. gpt-4o-mini recommended for card
-            generation.
+            <strong>OpenAI</strong> — Paid. gpt-4o-mini recommended.
           </p>
           <p>
-            <strong>Claude</strong> — Paid. Requires API key from
-            console.anthropic.com.
+            <strong>Claude</strong> — Paid. API key from console.anthropic.com.
           </p>
         </div>
       </section>

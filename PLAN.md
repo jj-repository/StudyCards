@@ -55,12 +55,12 @@ Desktop app that combines LLM-powered flashcard generation from Markdown files w
 
 ### Phase 3 — Extras
 
-- [ ] Self-update (Tauri updater plugin)
-- [ ] Anki .apkg import
-- [ ] Export to Anki format (for mobile study)
-- [ ] Claude Code skill: `/generate-cards <file>` for Max subscribers
-- [ ] Bulk card generation: queue multiple MDs, process sequentially with progress
-- [ ] Card tags/decks: organize cards beyond source file grouping
+- [x] Self-update (Tauri updater plugin registered, needs signing keys for first release)
+- [x] Anki .apkg import (parse zip → SQLite → extract notes)
+- [x] Export to Anki format (generate minimal .apkg with Basic model)
+- [x] Claude Code skill: `/generate-cards <file>` for Max subscribers
+- [x] Bulk card generation: multi-file picker, sequential processing with progress
+- [x] Card tags/decks: decks table, CRUD commands, move cards, tag updates
 
 ### Final Checks
 

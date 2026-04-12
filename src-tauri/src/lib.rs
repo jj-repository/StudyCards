@@ -1,3 +1,5 @@
+mod anki_export;
+mod anki_import;
 mod commands;
 mod db;
 mod fsrs_engine;
@@ -66,6 +68,15 @@ pub fn run() {
             commands::llm_cmds::list_models,
             commands::llm_cmds::detect_ollama,
             commands::llm_cmds::generate_cards_rules,
+            commands::llm_cmds::import_anki,
+            commands::llm_cmds::export_anki,
+            // Decks
+            commands::decks::list_decks,
+            commands::decks::create_deck,
+            commands::decks::rename_deck,
+            commands::decks::delete_deck,
+            commands::decks::move_cards_to_deck,
+            commands::decks::update_card_tags,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

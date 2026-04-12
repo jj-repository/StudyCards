@@ -10,6 +10,7 @@ import {
   Loader2,
   FileText,
   RefreshCw,
+  Files,
 } from "lucide-react";
 
 interface GeneratedCard {
@@ -21,17 +22,19 @@ interface GeneratedCard {
 
 interface PendingCard extends GeneratedCard {
   accepted: boolean;
+  source?: string;
 }
 
 type Mode = "ai" | "rules";
 
 export function Generate() {
-  const [filePath, setFilePath] = useState<string | null>(null);
+  const [filePaths, setFilePaths] = useState<string[]>([]);
   const [content, setContent] = useState("");
   const [model, setModel] = useState("qwen2.5:7b");
   const [mode, setMode] = useState<Mode>("ai");
   const [pending, setPending] = useState<PendingCard[]>([]);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState("");
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [changedFile, setChangedFile] = useState<string | null>(null);
@@ -45,45 +48,94 @@ export function Generate() {
     };
   }, []);
 
-  const pickFile = async () => {
+  const pickFiles = async () => {
     const selected = await open({
-      multiple: false,
+      multiple: true,
       filters: [{ name: "Markdown", extensions: ["md", "txt"] }],
     });
     if (selected) {
-      const path = typeof selected === "string" ? selected : selected;
-      setFilePath(path);
-      const text = await invoke<string>("read_source_content", { path });
-      setContent(text);
+      const paths = Array.isArray(selected) ? selected : [selected];
+      setFilePaths(paths);
+      // Load first file for preview
+      if (paths.length === 1) {
+        const text = await invoke<string>("read_source_content", {
+          path: paths[0],
+        });
+        setContent(text);
+      } else {
+        setContent("");
+      }
       setPending([]);
       setSaved(false);
       setError("");
     }
   };
 
+  const generateOne = async (path: string): Promise<PendingCard[]> => {
+    const text = await invoke<string>("read_source_content", { path });
+    let cards: GeneratedCard[];
+    if (mode === "rules") {
+      cards = await invoke<GeneratedCard[]>("generate_cards_rules", {
+        content: text,
+      });
+    } else {
+      cards = await invoke<GeneratedCard[]>("generate_cards", {
+        content: text,
+        model,
+      });
+    }
+    const name = path.split("/").pop() || path.split("\\").pop() || path;
+    return cards.map((c) => ({ ...c, accepted: true, source: name }));
+  };
+
   const generate = async () => {
-    if (!content.trim()) return;
+    if (filePaths.length === 0 && !content.trim()) return;
     setLoading(true);
     setError("");
     setPending([]);
     setSaved(false);
+
     try {
-      let cards: GeneratedCard[];
-      if (mode === "rules") {
-        cards = await invoke<GeneratedCard[]>("generate_cards_rules", {
-          content,
-        });
+      if (filePaths.length <= 1 && content.trim()) {
+        // Single file — use content directly
+        let cards: GeneratedCard[];
+        if (mode === "rules") {
+          cards = await invoke<GeneratedCard[]>("generate_cards_rules", {
+            content,
+          });
+        } else {
+          cards = await invoke<GeneratedCard[]>("generate_cards", {
+            content,
+            model,
+          });
+        }
+        setPending(cards.map((c) => ({ ...c, accepted: true })));
       } else {
-        cards = await invoke<GeneratedCard[]>("generate_cards", {
-          content,
-          model,
-        });
+        // Bulk — process sequentially
+        const allCards: PendingCard[] = [];
+        for (let i = 0; i < filePaths.length; i++) {
+          setProgress(`${i + 1}/${filePaths.length}`);
+          try {
+            const cards = await generateOne(filePaths[i]);
+            allCards.push(...cards);
+          } catch (e) {
+            const name = filePaths[i].split("/").pop() || filePaths[i];
+            allCards.push({
+              cardType: "qa",
+              question: `[Error processing ${name}]`,
+              answer: String(e),
+              text: null,
+              accepted: false,
+            });
+          }
+        }
+        setPending(allCards);
       }
-      setPending(cards.map((c) => ({ ...c, accepted: true })));
     } catch (e) {
       setError(String(e));
     } finally {
       setLoading(false);
+      setProgress("");
     }
   };
 
@@ -91,10 +143,11 @@ export function Generate() {
     const accepted = pending.filter((c) => c.accepted);
     if (accepted.length === 0) return;
 
+    // For single file, register source
     let sourceId: number | null = null;
-    if (filePath) {
+    if (filePaths.length === 1) {
       sourceId = await invoke<number>("add_source", {
-        path: filePath,
+        path: filePaths[0],
         isFolder: false,
       });
     }
@@ -118,9 +171,12 @@ export function Generate() {
   };
 
   const acceptedCount = pending.filter((c) => c.accepted).length;
-  const fileName = filePath
-    ? filePath.split("/").pop() || filePath.split("\\").pop()
-    : null;
+  const fileLabel =
+    filePaths.length === 0
+      ? "Open files..."
+      : filePaths.length === 1
+        ? filePaths[0].split("/").pop() || filePaths[0].split("\\").pop()
+        : `${filePaths.length} files`;
 
   return (
     <div className="space-y-5">
@@ -129,11 +185,15 @@ export function Generate() {
       {/* Controls */}
       <div className="flex items-center gap-3 flex-wrap">
         <button
-          onClick={pickFile}
+          onClick={pickFiles}
           className="flex items-center gap-2 rounded-md bg-card px-3 py-2 text-sm hover:bg-accent transition-colors"
         >
-          <FolderOpen className="h-4 w-4 text-muted-foreground" />
-          {fileName || "Open file..."}
+          {filePaths.length > 1 ? (
+            <Files className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <FolderOpen className="h-4 w-4 text-muted-foreground" />
+          )}
+          {fileLabel}
         </button>
 
         {/* Mode toggle */}
@@ -171,7 +231,7 @@ export function Generate() {
 
         <button
           onClick={generate}
-          disabled={loading || !content.trim()}
+          disabled={loading || (filePaths.length === 0 && !content.trim())}
           className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/85 disabled:opacity-40 transition-colors"
         >
           {loading ? (
@@ -196,7 +256,7 @@ export function Generate() {
           </span>
           <button
             onClick={async () => {
-              setFilePath(changedFile);
+              setFilePaths([changedFile]);
               const text = await invoke<string>("read_source_content", {
                 path: changedFile,
               });
@@ -219,8 +279,8 @@ export function Generate() {
         </p>
       )}
 
-      {/* Content preview */}
-      {content && !pending.length && !loading && (
+      {/* Content preview — single file only */}
+      {content && filePaths.length <= 1 && !pending.length && !loading && (
         <div className="rounded-lg bg-card p-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs text-muted-foreground">
@@ -246,7 +306,7 @@ export function Generate() {
         <div className="flex items-center justify-center py-16">
           <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           <span className="ml-3 text-sm text-muted-foreground">
-            Generating...
+            Generating{progress ? ` (${progress})` : ""}...
           </span>
         </div>
       )}
@@ -282,9 +342,16 @@ export function Generate() {
                 }`}
               >
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] uppercase tracking-wide text-muted-foreground/60">
-                    {card.cardType}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground/60">
+                      {card.cardType}
+                    </span>
+                    {card.source && (
+                      <span className="text-[10px] text-muted-foreground/40 truncate">
+                        {card.source}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm mt-0.5">
                     {card.cardType === "qa" ? card.question : card.text}
                   </p>

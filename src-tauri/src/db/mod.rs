@@ -78,6 +78,17 @@ pub fn init_db(path: &Path) -> Result<Connection, Box<dyn std::error::Error>> {
         INSERT INTO settings (key, value) VALUES ('new_cards_per_session', '20');
         INSERT INTO settings (key, value) VALUES ('target_retention', '0.9');",
         ),
+        M::up(
+            "CREATE TABLE decks (
+            id   INTEGER PRIMARY KEY,
+            name TEXT NOT NULL UNIQUE,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+
+        INSERT INTO decks (name) VALUES ('Default');
+
+        ALTER TABLE cards ADD COLUMN deck_id INTEGER REFERENCES decks(id) ON DELETE SET NULL DEFAULT 1;",
+        ),
     ]);
 
     migrations.to_latest(&mut conn)?;

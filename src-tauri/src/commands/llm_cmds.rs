@@ -127,3 +127,18 @@ pub fn generate_cards_rules(content: String) -> Result<Vec<GeneratedCard>, Strin
     }
     Ok(cards)
 }
+
+#[tauri::command]
+pub fn import_anki(path: String) -> Result<Vec<GeneratedCard>, String> {
+    crate::anki_import::import_apkg(&path)
+}
+
+#[tauri::command]
+pub fn export_anki(
+    db: tauri::State<'_, DbState>,
+    output_path: String,
+    deck_name: String,
+) -> Result<String, String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    crate::anki_export::export_apkg(&conn, &output_path, &deck_name)
+}

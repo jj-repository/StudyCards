@@ -1,0 +1,13 @@
+{
+  "identifier": "default",
+  "description": "Default permissions for StudyCards",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:default",
+    "store:default",
+    "fs:default",
+    "fs:read-all",
+    "shell:default"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "studycards",
+  "version": "0.01.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "format": "prettier --write .",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "prettier": "^3.8.2",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "@tanstack/react-table": "^8.21.3",
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/cli": "^2.10.1",
+    "@tauri-apps/plugin-dialog": "^2.7.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.8.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-hook-form": "^7.72.1",
+    "react-router-dom": "^7.14.0",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.2",
+    "vite": "^8.0.8",
+    "zod": "^4.3.6"
+  }
+}

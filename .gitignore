@@ -1,0 +1,32 @@
+# dependencies
+node_modules
+
+# build output
+dist
+out
+
+# Rust
+src-tauri/target
+
+# env
+.env
+.env.local
+.env.*.local
+
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+screenshot.png
+screenshot_small.png

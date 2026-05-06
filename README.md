@@ -13,14 +13,14 @@ Desktop flashcard app. Generate cards from Markdown with AI, study with FSRS spa
 
 ## Stack
 
-| Layer | Tech |
-|-------|------|
-| Shell | Tauri 2 |
-| Frontend | React 19 + TypeScript + Vite 8 |
-| UI | Tailwind v4 + Lucide icons |
-| Backend | Rust |
-| Database | SQLite (rusqlite) |
-| Spaced Rep | fsrs-rs 5.2 |
+| Layer      | Tech                           |
+| ---------- | ------------------------------ |
+| Shell      | Tauri 2                        |
+| Frontend   | React 19 + TypeScript + Vite 8 |
+| UI         | Tailwind v4 + Lucide icons     |
+| Backend    | Rust                           |
+| Database   | SQLite (rusqlite)              |
+| Spaced Rep | fsrs-rs 5.2                    |
 
 ## Building from Source
 

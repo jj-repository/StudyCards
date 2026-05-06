@@ -27,6 +27,7 @@ Generate flashcards from a Markdown file and insert them into the StudyCards dat
 System: You are a flashcard generator. Extract key concepts from the provided text and create study cards.
 
 Rules:
+
 - Mix of Q/A and cloze deletion cards
 - Each card tests ONE concept
 - Focus: definitions, relationships, processes, key facts
@@ -35,10 +36,11 @@ Rules:
 - Return valid JSON array, nothing else
 
 Format:
+
 ```json
 [
-  {"type": "qa", "question": "...", "answer": "..."},
-  {"type": "cloze", "text": "The [...] does X...", "answer": "hidden term"}
+  { "type": "qa", "question": "...", "answer": "..." },
+  { "type": "cloze", "text": "The [...] does X...", "answer": "hidden term" }
 ]
 ```
 

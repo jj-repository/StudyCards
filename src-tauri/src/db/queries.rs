@@ -56,7 +56,7 @@ pub fn delete_source(conn: &Connection, id: i64) -> Result<(), rusqlite::Error> 
 
 pub fn get_all_cards(conn: &Connection) -> Result<Vec<Card>, rusqlite::Error> {
     let mut stmt = conn.prepare(
-        "SELECT c.id, c.source_id, c.type, c.front, c.back, c.meaning_hash, c.tags, c.manual, c.created_at,
+        "SELECT c.id, c.source_id, c.type, c.front, c.back, c.meaning_hash, c.tags, c.deck_id, c.manual, c.created_at,
                 cs.stability, cs.difficulty, cs.due_date, cs.status, cs.review_count
          FROM cards c
          LEFT JOIN card_states cs ON cs.card_id = c.id
@@ -71,13 +71,14 @@ pub fn get_all_cards(conn: &Connection) -> Result<Vec<Card>, rusqlite::Error> {
             back: row.get(4)?,
             meaning_hash: row.get(5)?,
             tags: row.get(6)?,
-            manual: row.get::<_, i32>(7)? != 0,
-            created_at: row.get(8)?,
-            stability: row.get(9)?,
-            difficulty: row.get(10)?,
-            due_date: row.get(11)?,
-            status: row.get(12)?,
-            review_count: row.get(13)?,
+            deck_id: row.get(7)?,
+            manual: row.get::<_, i32>(8)? != 0,
+            created_at: row.get(9)?,
+            stability: row.get(10)?,
+            difficulty: row.get(11)?,
+            due_date: row.get(12)?,
+            status: row.get(13)?,
+            review_count: row.get(14)?,
         })
     })?;
     rows.collect()

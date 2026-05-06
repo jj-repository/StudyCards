@@ -22,6 +22,7 @@ pub struct Card {
     pub back: String,
     pub meaning_hash: String,
     pub tags: String,
+    pub deck_id: Option<i64>,
     pub manual: bool,
     pub created_at: String,
     // Joined fields from card_states

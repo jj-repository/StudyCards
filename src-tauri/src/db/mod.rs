@@ -87,7 +87,9 @@ pub fn init_db(path: &Path) -> Result<Connection, Box<dyn std::error::Error>> {
 
         INSERT INTO decks (name) VALUES ('Default');
 
-        ALTER TABLE cards ADD COLUMN deck_id INTEGER REFERENCES decks(id) ON DELETE SET NULL DEFAULT 1;",
+        ALTER TABLE cards ADD COLUMN deck_id INTEGER REFERENCES decks(id) ON DELETE SET NULL;
+
+        UPDATE cards SET deck_id = 1;",
         ),
     ]);
 

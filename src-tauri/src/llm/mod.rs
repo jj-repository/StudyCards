@@ -49,6 +49,8 @@ pub enum LlmError {
     Unavailable(String),
 }
 
+// rustc 1.94.1 ICEs in check_mod_deathness on this trait; allow keeps build green.
+#[allow(dead_code)]
 #[async_trait]
 pub trait LlmProvider: Send + Sync {
     async fn chat(&self, request: ChatRequest) -> Result<ChatResponse, LlmError>;
